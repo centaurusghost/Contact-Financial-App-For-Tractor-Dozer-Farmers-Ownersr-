@@ -1,7 +1,5 @@
-import 'package:clean_app/DataPage.dart';
 import 'package:clean_app/MainMenu.dart';
 import "package:flutter/material.dart";
-// import 'package:clean_app/MainMenu.dart';
 
 void main() => runApp(MyApp());
 //checking git push

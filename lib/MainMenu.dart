@@ -22,7 +22,7 @@ class _State extends State<MainMenu> {
   FocusNode myFocusNode;
   List <Contact> listContact ;
   List <Contact> filteredContact;
-  bool isSearching =false;
+  bool isSearching = false;
 
 
   void _incrementTab(index) {
@@ -34,7 +34,7 @@ class _State extends State<MainMenu> {
   void surelyDelete(BuildContext context, Contact contact) async {
     await databaseHelper.deleteContact(contact.id);
     setState((){
-      //contactsViewWidget(contacts,isSearching);
+      contactsViewWidget(contacts,isSearching);
     });
   }
   //
@@ -44,9 +44,10 @@ class _State extends State<MainMenu> {
   }
 
   void initState() {
-    getContactList().then((copiedData) {
+    getContactList().then((data) {
       setState(() {
-        filteredContact= copiedData;
+         filteredContact= data;
+         contacts=data;
       });
 
     });
@@ -57,7 +58,7 @@ class _State extends State<MainMenu> {
   void filterContact(value){
     //print(listContact.where((xxx) => xxx.name=='tilak').toList(););
     setState(() {
-      filteredContact = listContact.where((contact) => contact.name.toLowerCase().contains(value.toLowerCase())).toList();
+      filteredContact = contacts.where((contact) => contact.name.toLowerCase().contains(value.toLowerCase())).toList();
       // filteredContact = listContact.where((xxx) => xxx.name=='tilak khatri').toList();
     });
   }
@@ -83,7 +84,7 @@ class _State extends State<MainMenu> {
 
   String displayTotal(){
     double displayTotall=0;
-    for(int i =0; i<=filteredContact.length-1; i++){
+    for(int i =0; i<=contacts.length-1; i++){
       displayTotall =displayTotall+ double.parse(filteredContact[i].total);
     }
     String displayTotals;
@@ -92,7 +93,7 @@ class _State extends State<MainMenu> {
   }
   String displayRemaining(){
     double displayTotall=0;
-    for(int i =0; i<=filteredContact.length-1; i++){
+    for(int i =0; i<=contacts.length-1; i++){
       displayTotall =displayTotall+ double.parse(filteredContact[i].remaining);
       // print(displayTotall);
     }
@@ -102,8 +103,8 @@ class _State extends State<MainMenu> {
   }
   String displayPaid(){
     double displayTotall=0;
-    for(int i =0; i<=filteredContact.length-1; i++){
-      displayTotall =displayTotall+ double.parse(filteredContact[i].paidamount);
+    for(int i =0; i<=contacts.length-1; i++){
+      displayTotall =displayTotall+ double.parse(contacts[i].paidamount);
       // print(displayTotall);
     }
     String displayTotals;
@@ -119,7 +120,7 @@ class _State extends State<MainMenu> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Total Customers= '+listContact.length.toString()),
+            child: Text('Total Customers= '+contacts.length.toString()),
           ),
           SimpleDialogOption(
             onPressed: () {
@@ -193,7 +194,7 @@ class _State extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    isSearching = searchController.text.isNotEmpty;
+    bool isSearching = searchController.text.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,
@@ -259,11 +260,12 @@ class _State extends State<MainMenu> {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      //isSearching ==true? contactsFiltered.length :
+      itemCount:isSearching ==true? filteredContact.length : contacts.length,
       // isSearching ==true? contactsFiltered.length :
-      itemCount: isSearching==true ? filteredContact.length: contacts.length,
+      //itemCount: filteredContact.length,
       itemBuilder: (BuildContext context, int position) {
-        var contact = isSearching==true ? filteredContact[position]:contacts[position];
+       // var contact =filteredContact[position];
+        var contact =isSearching ==true? filteredContact[position]:contacts[position];
         return Card(
           color: Colors.white,
           elevation: 2.0,
