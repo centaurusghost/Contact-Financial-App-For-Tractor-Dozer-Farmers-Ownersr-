@@ -116,7 +116,7 @@ class _State extends State<DataPage> {
             ),
             //SizedBox(width: 50),
             Container(
-              width: 83,
+              width: 120,
             ),
             new FlatButton(
               child: new Text("No"),
@@ -223,7 +223,7 @@ class _State extends State<DataPage> {
               },
             ),
             Container(
-              width: 83,
+              width: 120,
             ),
             new FlatButton(
               child: new Text("No"),
@@ -457,7 +457,9 @@ class _State extends State<DataPage> {
                             //fill data
                           },
                         ),
-                        SizedBox(width: 50),
+                        Container(
+                          width: 50,
+                        ),
                         FlatButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),

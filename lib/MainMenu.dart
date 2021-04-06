@@ -32,7 +32,31 @@ class _State extends State<MainMenu> {
   }
 
   void surelyDelete(BuildContext context, Contact contact) async {
-    await databaseHelper.deleteContact(contact.id);
+   int result;
+   result = await databaseHelper.deleteContact(contact.id);
+     if (result != 0) {
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+    return AlertDialog(
+    title: new Text("Notice!!"),
+    backgroundColor: Colors.white,
+    content: Text('Contact केहि समय मा delete हुनेछ !!'),
+    );
+
+    });
+    }
+    if (result == 0) {
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+    return AlertDialog(
+    title: new Text("Notice!!"),
+    backgroundColor: Colors.white,
+    content: Text('There was a problem while Deleting. Please Restart the App & try again'),
+    );
+    });
+    }
     setState((){
       contactsViewWidget(contacts,isSearching);
     });
@@ -161,7 +185,9 @@ class _State extends State<MainMenu> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return Container(
+            width: (MediaQuery.of(context).size.width-200)/2,
+        child: AlertDialog(
           title: new Text("Alert!!"),
           backgroundColor: Colors.white,
           content: new Text("Do you really Want to Delete?"),
@@ -169,25 +195,25 @@ class _State extends State<MainMenu> {
             new FlatButton(
               child: new Text("Yes"),
               textColor: Colors.white,
-              minWidth: 100,
+              //minWidth: 100,
               color: Colors.red,
               onPressed: () {
                 surelyDelete(context, contact);
                 Navigator.of(context).pop();
               },
             ),
-            SizedBox(width: 50),
+            Container(width: 120),
             new FlatButton(
               child: new Text("No"),
               textColor: Colors.white,
-              minWidth: 100,
+             // minWidth: 100,
               color: Colors.red,
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
           ],
-        );
+        ));
       },
     );
   }
@@ -195,6 +221,7 @@ class _State extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
+    double Width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,
@@ -257,8 +284,10 @@ class _State extends State<MainMenu> {
   }
 
   Widget contactsViewWidget(contacts, isSearching) {
-    return ListView.builder(
+    return Expanded(
+        child: ListView.builder(
       scrollDirection: Axis.vertical,
+      physics: ClampingScrollPhysics(),
       shrinkWrap: true,
       itemCount:isSearching ==true? filteredContact.length : contacts.length,
       // isSearching ==true? contactsFiltered.length :
@@ -295,7 +324,7 @@ class _State extends State<MainMenu> {
           ),
         );
       },
-    );
+    ));
   }
 
   Widget searchBar(){
