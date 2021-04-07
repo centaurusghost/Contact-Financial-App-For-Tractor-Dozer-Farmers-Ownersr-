@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 class DataPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _State();
@@ -19,9 +19,9 @@ class _State extends State<DataPage> {
   int numTwo = 1, rawTotal = 2;
   String totalOne = 'a', totalTwo = 'b';
   FocusNode myFocusNode;
+
   @override
   void initState() {
-
     super.initState();
 
     myFocusNode = FocusNode();
@@ -35,6 +35,18 @@ class _State extends State<DataPage> {
     totalController.text = contact.total;
     remainingController.text = contact.remaining;
   }
+
+  void customLaunch(command) async {
+    if (await canLaunch(command)) {
+      await launch(command);
+    } else {
+      print(' could not launch $command');
+    }
+  }
+
+
+
+
 
 
   String onChanged() {
@@ -98,37 +110,37 @@ class _State extends State<DataPage> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-        width: (wide-200)/2,
+            width: (wide - 200) / 2,
             child: AlertDialog(
-          title: new Text("Alert!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Do you really Want to Clear?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Yes"),
-              textColor: Colors.white,
-             // minWidth: 80 ,
-              color: Colors.red,
-              onPressed: () {
-                clearEverything();
-                Navigator.of(context).pop();
-              },
-            ),
-            //SizedBox(width: 50),
-            Container(
-              width: 120,
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              textColor: Colors.white,
-             // minWidth: 80,
-              color: Colors.red,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ));
+              title: new Text("Alert!!"),
+              backgroundColor: Colors.white,
+              content: new Text("Do you really Want to Clear?"),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text("Yes"),
+                  textColor: Colors.white,
+                  // minWidth: 80 ,
+                  color: Colors.red,
+                  onPressed: () {
+                    clearEverything();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                //SizedBox(width: 50),
+                Container(
+                  width: 120,
+                ),
+                new FlatButton(
+                  child: new Text("No"),
+                  textColor: Colors.white,
+                  // minWidth: 80,
+                  color: Colors.red,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
       },
     );
   }
@@ -190,54 +202,55 @@ class _State extends State<DataPage> {
 //this function to show save data dialog before saving to database
   void _showDialogForSaving(BuildContext context, double wide) {
 // flutter defined function
-  if(nameController.text=='' || timeController.text=='' || myController.text=='0'|| timeController.text=='0' || myController.text=='0'){
-    showDialog(
+    if (nameController.text == '' ||
+        timeController.text == '' ||
+        myController.text == '0' ||
+        timeController.text == '0' ||
+        myController.text == '0') {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: new Text("Notice!!"),
+                backgroundColor: Colors.white,
+                content: new Text("Cannot save incomplete Data!"));
+          });
+    } else {
+      calculateData();
+      showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-              title: new Text("Notice!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Cannot save incomplete Data!"));
-
-        }
-
-    );
-  }
-  else {
-    calculateData();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ( AlertDialog(
-          title: new Text("Notice!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Do you really Want to Save?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Yes"),
-              textColor: Colors.white,
-             // minWidth: 80,
-              color: Colors.red,
-              onPressed: () {
-                saveData(); //this line is giving error
-              },
-            ),
-            Container(
-              width: 120,
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              textColor: Colors.white,
-             // minWidth: 100,
-              color: Colors.red,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ) );
-      },
-    );}
+          return (AlertDialog(
+            title: new Text("Notice!!"),
+            backgroundColor: Colors.white,
+            content: new Text("Do you really Want to Save?"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Yes"),
+                textColor: Colors.white,
+                // minWidth: 80,
+                color: Colors.red,
+                onPressed: () {
+                  saveData(); //this line is giving error
+                },
+              ),
+              Container(
+                width: 120,
+              ),
+              new FlatButton(
+                child: new Text("No"),
+                textColor: Colors.white,
+                // minWidth: 100,
+                color: Colors.red,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ));
+        },
+      );
+    }
   }
 
   TextEditingController totalController = TextEditingController();
@@ -247,6 +260,7 @@ class _State extends State<DataPage> {
   TextEditingController remainingController = TextEditingController();
   TextEditingController paidController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     double Width = MediaQuery.of(context).size.width;
@@ -263,7 +277,6 @@ class _State extends State<DataPage> {
                 child: ListView(children: <Widget>[
                   Container(
                     height: 10,
-
                   ),
                   Container(
                     height: 58,
@@ -432,11 +445,10 @@ class _State extends State<DataPage> {
                       ),
                     ),
                   ),
-               Container(
-                 height: 20,
-
-               ),
-               Container(
+                  Container(
+                    height: 20,
+                  ),
+                  Container(
                     height: 70,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -445,13 +457,13 @@ class _State extends State<DataPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                         minWidth: (Width-80)/2,
+                          minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
                           color: Colors.blue,
                           child: Text('Calculate & Save'),
                           onPressed: () {
-                            _showDialogForSaving(context,Width);
+                            _showDialogForSaving(context, Width);
                             //calculateData();
                             //  new Future.delayed(const Duration(seconds : 5));
                             //fill data
@@ -464,19 +476,48 @@ class _State extends State<DataPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                          minWidth:(Width-80)/2,
+                          minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
                           color: Colors.red,
                           child: Text('Clear'),
                           onPressed: () {
-                            _showDialog(context,Width);
+                            _showDialog(context, Width);
                           },
                         ),
                       ],
                       // padding: EdgeInsets.symmetric(horizontal:12, vertical: 12),
                     ),
                   ),
+                  Container(
+                    height:15,
+                  ),
+                  GestureDetector(child:Container(
+                   height: 30,
+                    child: Icon(Icons.dialer_sip_rounded,
+                    color: Colors.green,
+                    size: 30,),
+                  ),
+                  onDoubleTap: (){
+                    if(phoneController.text!='' && phoneController.text.length==10){
+                      String newDialer = phoneController.text;
+                      customLaunch('tel:$newDialer');
+                     // customLaunch('https://www.youtube.com/');
+                    }
+                    else{
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                title: new Text("Notice!!"),
+                                backgroundColor: Colors.white,
+                                content: new Text("Phone No. is not valid!"));
+                          });
+                    }
+
+                  },
+                  ),
+
                 ]))));
   }
 }
