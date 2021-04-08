@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 class DataPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _State();
@@ -43,11 +44,6 @@ class _State extends State<DataPage> {
       print(' could not launch $command');
     }
   }
-
-
-
-
-
 
   String onChanged() {
     //solution for invalid double
@@ -416,6 +412,7 @@ class _State extends State<DataPage> {
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        LengthLimitingTextInputFormatter(6),
                       ],
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -490,34 +487,35 @@ class _State extends State<DataPage> {
                     ),
                   ),
                   Container(
-                    height:15,
+                    height: 20,
                   ),
-                  GestureDetector(child:Container(
-                   height: 30,
-                    child: Icon(Icons.dialer_sip_rounded,
-                    color: Colors.green,
-                    size: 30,),
+                  GestureDetector(
+                    child: Container(
+                      height: 30,
+                      child: Icon(
+                        Icons.dialer_sip_rounded,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+                    ),
+                    onDoubleTap: () {
+                      if (phoneController.text != '' &&
+                          phoneController.text.length == 10) {
+                        String newDialer = phoneController.text;
+                        customLaunch('tel:$newDialer');
+                        // customLaunch('https://www.youtube.com/');
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: new Text("Notice!!"),
+                                  backgroundColor: Colors.white,
+                                  content: new Text("Phone No. is not valid!"));
+                            });
+                      }
+                    },
                   ),
-                  onDoubleTap: (){
-                    if(phoneController.text!='' && phoneController.text.length==10){
-                      String newDialer = phoneController.text;
-                      customLaunch('tel:$newDialer');
-                     // customLaunch('https://www.youtube.com/');
-                    }
-                    else{
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                                title: new Text("Notice!!"),
-                                backgroundColor: Colors.white,
-                                content: new Text("Phone No. is not valid!"));
-                          });
-                    }
-
-                  },
-                  ),
-
                 ]))));
   }
 }

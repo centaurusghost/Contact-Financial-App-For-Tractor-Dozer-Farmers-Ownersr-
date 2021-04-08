@@ -5,35 +5,22 @@ import 'package:clean_app/DatabaseHelper.dart';
 import 'package:flutter/services.dart';
 import 'drawerMenu.dart';
 
-class MainMenu extends StatefulWidget {
+class UnpaidContacts extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _State();
 }
 
-class _State extends State<MainMenu> {
+class _State extends State<UnpaidContacts> {
   TextEditingController searchController = TextEditingController();
   String userSearchInput = "";
-
-//search data from database
-  int index;
-  int _cIndex = 0;
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Contact> contacts;
   int cout = 0;
   FocusNode myFocusNode;
   List<Contact> listContact;
-
   List<Contact> filteredContact;
+  List<Contact> unpaidList = [];
   bool isSearching = false;
-
-  void _incrementTab(index) {
-    setState(() {
-      _cIndex = index;
-    });
-  }
-
-
-
 
   void surelyDelete(BuildContext context, Contact contact) async {
     int result;
@@ -62,7 +49,7 @@ class _State extends State<MainMenu> {
           });
     }
     setState(() {
-      contactsViewWidget(contacts, isSearching);
+      contactsViewWidget(listContact, isSearching);
     });
   }
 
@@ -76,7 +63,11 @@ class _State extends State<MainMenu> {
     getContactList().then((data) {
       setState(() {
         filteredContact = data;
-        contacts = data;
+        for (int i = 0; i <= filteredContact.length - 1; i++) {
+          if (filteredContact[i].paidamount == '0') {
+            unpaidList.add(filteredContact.elementAt(i));
+          }
+        }
       });
     });
     if (myFocusNode == null) {
@@ -88,7 +79,7 @@ class _State extends State<MainMenu> {
   void filterContact(value) {
     //print(listContact.where((xxx) => xxx.name=='tilak').toList(););
     setState(() {
-      filteredContact = contacts
+      filteredContact = unpaidList
           .where((contact) =>
               contact.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
@@ -105,77 +96,6 @@ class _State extends State<MainMenu> {
 
   onSearchChanged() {
     print(searchController.text);
-  }
-
-  String displayTotal() {
-    double displayTotall = 0;
-    for (int i = 0; i <= contacts.length - 1; i++) {
-      displayTotall = displayTotall + double.parse(filteredContact[i].total);
-    }
-    String displayTotals;
-    displayTotals = displayTotall.toString();
-    return displayTotals;
-  }
-
-  String displayRemaining() {
-    double displayTotall = 0;
-    for (int i = 0; i <= contacts.length - 1; i++) {
-      displayTotall =
-          displayTotall + double.parse(filteredContact[i].remaining);
-      // print(displayTotall);
-    }
-    String displayTotals;
-    displayTotals = displayTotall.toString();
-    return displayTotals;
-  }
-
-  String displayPaid() {
-    double displayTotall = 0;
-    for (int i = 0; i <= contacts.length - 1; i++) {
-      displayTotall = displayTotall + double.parse(contacts[i].paidamount);
-      // print(displayTotall);
-    }
-    String displayTotals;
-    displayTotals = displayTotall.toString();
-    return displayTotals;
-  }
-
-  void menuDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: Text("See Details"),
-            children: [
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Total Customers= ' + contacts.length.toString()),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context);
-                  //displayTotal();
-                },
-                child: Text('Total Money=  Rs.' + displayTotal()),
-                // child: Text('Total Money=  Rs.'),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('तपाईंले पाएको रकम  =  Rs.' + displayPaid()),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('बाकी उठाउँनु पर्ने =  Rs.' + displayRemaining()),
-              ),
-            ],
-          );
-        });
   }
 
   //shows dialog before deleting
@@ -224,8 +144,10 @@ class _State extends State<MainMenu> {
       appBar: AppBar(
           toolbarHeight: 50,
           centerTitle: true,
-          backgroundColor: Colors.green,
-          title: Text('नाम खोजी गर्नुहोस ')),
+          backgroundColor: Colors.red,
+          title: Text('कत्ति पनि नतिरेका   ' +
+              unpaidList.length.toString() +
+              '   जना')),
       body: Column(
         children: [
           searchBar(),
@@ -236,108 +158,13 @@ class _State extends State<MainMenu> {
               if (!snapshot.hasData) return Container();
               List<Contact> contacts = snapshot.data;
               print(contacts);
-              return contactsViewWidget(contacts, isSearching);
+              return contactsViewWidget(unpaidList, isSearching);
             },
           ),
         ],
       ),
       drawer: DrawerMenu(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'New',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menu',
-          ),
-        ],
-        onTap: (index) {
-          _incrementTab(index);
-          switch (index) {
-            case 0:
-              {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DataPage()),
-                );
-                break;
-              }
-
-            case 1:
-              {
-                myFocusNode.requestFocus();
-                break;
-              }
-            //   break;
-            case 2:
-              { if(contacts.length!=0 || contacts.length!=null){
-                menuDialog();}
-
-                break;
-              }
-
-            default:
-              {
-                break;
-              }
-          }
-        },
-      ),
     );
-  }
-
-  Widget contactsViewWidget(contacts, isSearching) {
-    return Expanded(
-        child: ListView.builder(
-      scrollDirection: Axis.vertical,
-      physics: ClampingScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: isSearching == true ? filteredContact.length : contacts.length,
-      // isSearching ==true? contactsFiltered.length :
-      //itemCount: filteredContact.length,
-      itemBuilder: (BuildContext context, int position) {
-        // var contact =filteredContact[position];
-        var contact = isSearching == true
-            ? filteredContact[position]
-            : contacts[position];
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              //child: Icon(Icons.perm_contact_cal),
-              child: Text(
-                contact.name[0].toUpperCase(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-              ),
-            ),
-            title: Text(contact.name),
-            subtitle: Text(contact.remaining),
-            trailing: GestureDetector(
-              child: Icon(Icons.delete),
-              onTap: () {
-                showDeleteDialog(context, contact);
-              },
-            ),
-            //i dont know how to pass that editmode = true or false value
-            onTap: () {
-              //Datapage void _save() it contains edit mode check look once
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DataPage(contact: contact)),
-              );
-            },
-          ),
-        );
-      },
-    ));
   }
 
   Widget searchBar() {
@@ -380,5 +207,54 @@ class _State extends State<MainMenu> {
             labelText: 'Search'),
       ),
     );
+  }
+
+  Widget contactsViewWidget(unpaidList, isSearching) {
+    return Expanded(
+        child: ListView.builder(
+      scrollDirection: Axis.vertical,
+      physics: ClampingScrollPhysics(),
+      shrinkWrap: true,
+      itemCount:
+          isSearching == true ? filteredContact.length : unpaidList.length,
+      // isSearching ==true? contactsFiltered.length :
+      // itemCount: unpaidList.length,
+      itemBuilder: (BuildContext context, int position) {
+        // var contact =unpaidList[position];
+        var contact = isSearching == true
+            ? filteredContact[position]
+            : unpaidList[position];
+        return Card(
+          color: Colors.white,
+          elevation: 2.0,
+          child: ListTile(
+            leading: CircleAvatar(
+              //child: Icon(Icons.perm_contact_cal),
+              child: Text(
+                contact.name[0].toUpperCase(),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              ),
+            ),
+            title: Text(contact.name),
+            subtitle: Text(contact.remaining),
+            trailing: GestureDetector(
+              child: Icon(Icons.delete),
+              onTap: () {
+                showDeleteDialog(context, contact);
+              },
+            ),
+            //i dont know how to pass that editmode = true or false value
+            onTap: () {
+              //Datapage void _save() it contains edit mode check look once
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DataPage(contact: contact)),
+              );
+            },
+          ),
+        );
+      },
+    ));
   }
 }
