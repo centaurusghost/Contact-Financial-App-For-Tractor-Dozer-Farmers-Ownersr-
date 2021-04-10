@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'drawerMenu.dart';
 
 class UnpaidContacts extends StatefulWidget {
@@ -49,7 +50,7 @@ class _State extends State<UnpaidContacts> {
           });
     }
     setState(() {
-     // contactsViewWidget(listContact, isSearching);
+      // contactsViewWidget(listContact, isSearching);
     });
   }
 
@@ -63,7 +64,8 @@ class _State extends State<UnpaidContacts> {
     getContactList().then((data) {
       setState(() {
         filteredContact = data;
-        filteredContact.sort((a,b)=> a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        filteredContact.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         for (int i = 0; i <= filteredContact.length - 1; i++) {
           if (filteredContact[i].paidamount == '0') {
             unpaidList.add(filteredContact.elementAt(i));
@@ -118,10 +120,7 @@ class _State extends State<UnpaidContacts> {
                   color: Colors.red,
                   onPressed: () {
                     surelyDelete(context, contact);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => UnpaidContacts()),
-                    );
+                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: UnpaidContacts()));
                   },
                 ),
                 Container(width: 120),
@@ -144,22 +143,24 @@ class _State extends State<UnpaidContacts> {
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
     double Width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return SafeArea(child: Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,
           centerTitle: true,
-          backgroundColor: Colors.red,
+         // brightness: Brightness.light,
+          backgroundColor: Colors.deepPurple,
           title: Text('कत्ति पनि नतिरेका   ' +
               unpaidList.length.toString() +
               '   जना')),
+
       body: Column(
         children: [
           searchBar(),
-       contactsViewWidget(unpaidList, isSearching),
+          contactsViewWidget(unpaidList, isSearching),
         ],
       ),
       drawer: DrawerMenu(),
-    );
+    ) );
   }
 
   Widget searchBar() {
@@ -224,14 +225,18 @@ class _State extends State<UnpaidContacts> {
           elevation: 2.0,
           child: ListTile(
             leading: CircleAvatar(
+              backgroundColor: Colors.deepPurple,
               //child: Icon(Icons.perm_contact_cal),
               child: Text(
                 contact.name[0].toUpperCase(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0,color: Colors.white),
               ),
             ),
-            title: Text(contact.name),
-            subtitle: Text(contact.remaining),
+            title: Text(
+              contact.name.toUpperCase(),
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+            subtitle: Text(contact.remaining,
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w500),),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () {
@@ -240,12 +245,8 @@ class _State extends State<UnpaidContacts> {
             ),
             //i dont know how to pass that editmode = true or false value
             onTap: () {
-              //Datapage void _save() it contains edit mode check look once
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DataPage(contact: contact)),
-              );
+              Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.bottomCenter, child: DataPage(contact: contact)));
+
             },
           ),
         );

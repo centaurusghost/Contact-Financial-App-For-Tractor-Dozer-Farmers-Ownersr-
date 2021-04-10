@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'drawerMenu.dart';
 
 class ascendingNotpaid extends StatefulWidget {
@@ -120,10 +121,7 @@ class _State extends State<ascendingNotpaid> {
                   color: Colors.red,
                   onPressed: () {
                     surelyDelete(context, contact);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ascendingNotpaid()),
-                    );
+                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: ascendingNotpaid()));
                   },
                 ),
                 Container(width: 120),
@@ -145,12 +143,12 @@ class _State extends State<ascendingNotpaid> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    double Width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return SafeArea(child:Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,
+          brightness: Brightness.dark,
           centerTitle: true,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.deepPurple,
           title: Text('धेरै तिर्न बाकी  ' +
               unpaidList.length.toString() +
               '   जना')),
@@ -161,7 +159,7 @@ class _State extends State<ascendingNotpaid> {
         ],
       ),
       drawer: DrawerMenu(),
-    );
+    ));
   }
 
   Widget searchBar() {
@@ -226,14 +224,17 @@ class _State extends State<ascendingNotpaid> {
               elevation: 2.0,
               child: ListTile(
                 leading: CircleAvatar(
+                  backgroundColor: Colors.deepPurple,
                   //child: Icon(Icons.perm_contact_cal),
                   child: Text(
                     contact.name[0].toUpperCase(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0,color: Colors.white),
                   ),
                 ),
-                title: Text(contact.name),
-                subtitle: Text(contact.remaining),
+                title: Text( contact.name.toUpperCase(),
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                subtitle: Text(contact.remaining,
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w500),),
                 trailing: GestureDetector(
                   child: Icon(Icons.delete),
                   onTap: () {
@@ -242,12 +243,8 @@ class _State extends State<ascendingNotpaid> {
                 ),
                 //i dont know how to pass that editmode = true or false value
                 onTap: () {
-                  //Datapage void _save() it contains edit mode check look once
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DataPage(contact: contact)),
-                  );
+                  Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.bottomCenter, child: DataPage(contact: contact)));
+
                 },
               ),
             );

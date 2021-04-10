@@ -110,10 +110,13 @@ class _State extends State<DataPage> {
             child: AlertDialog(
               title: new Text("Alert!!"),
               backgroundColor: Colors.white,
-              content: new Text("Do you really Want to Clear?"),
+              content: new Text("Do you really Want to Clear?",
+                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+              ),
               actions: <Widget>[
                 new FlatButton(
-                  child: new Text("Yes"),
+                  child: new Text("Yes",
+                    style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
                   textColor: Colors.white,
                   // minWidth: 80 ,
                   color: Colors.red,
@@ -127,7 +130,8 @@ class _State extends State<DataPage> {
                   width: 120,
                 ),
                 new FlatButton(
-                  child: new Text("No"),
+                  child: new Text("No",
+                    style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
                   textColor: Colors.white,
                   // minWidth: 80,
                   color: Colors.red,
@@ -209,7 +213,13 @@ class _State extends State<DataPage> {
             return AlertDialog(
                 title: new Text("Notice!!"),
                 backgroundColor: Colors.white,
-                content: new Text("Cannot save incomplete Data!"));
+                content: new Text("Cannot save incomplete Data!",
+
+                  style: TextStyle(
+                    fontFamily: 'VisbyRound',
+                    fontWeight: FontWeight.bold,
+
+                  ),));
           });
     } else {
       calculateData();
@@ -219,10 +229,12 @@ class _State extends State<DataPage> {
           return (AlertDialog(
             title: new Text("Notice!!"),
             backgroundColor: Colors.white,
-            content: new Text("Do you really Want to Save?"),
+            content: new Text("Do you really Want to Save?",
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
             actions: <Widget>[
               new FlatButton(
-                child: new Text("Yes"),
+                child: new Text("Yes",
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
                 textColor: Colors.white,
                 // minWidth: 80,
                 color: Colors.red,
@@ -234,7 +246,8 @@ class _State extends State<DataPage> {
                 width: 120,
               ),
               new FlatButton(
-                child: new Text("No"),
+                child: new Text("No",
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
                 textColor: Colors.white,
                 // minWidth: 100,
                 color: Colors.red,
@@ -260,12 +273,13 @@ class _State extends State<DataPage> {
   @override
   Widget build(BuildContext context) {
     double Width = MediaQuery.of(context).size.width;
-    double Height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return SafeArea(child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Data and Money'),
-          backgroundColor: Colors.pinkAccent,
+          brightness: Brightness.dark,
+           title: Text('नाम र पैसा  दर्ता गर्नुहोस ',
+          ),
+          backgroundColor: Colors.deepPurple,
         ),
         body: new Container(
             child: Padding(
@@ -457,8 +471,14 @@ class _State extends State<DataPage> {
                           minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
-                          color: Colors.blue,
-                          child: Text('Calculate & Save'),
+                          color: Colors.deepPurple,
+                          child: Text('Calculate & Save',
+                            style: TextStyle(
+                              fontFamily: 'VisbyRound',
+                              fontWeight: FontWeight.bold,
+
+                            ),
+                          ),
                           onPressed: () {
                             _showDialogForSaving(context, Width);
                             //calculateData();
@@ -476,8 +496,13 @@ class _State extends State<DataPage> {
                           minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
-                          color: Colors.red,
-                          child: Text('Clear'),
+                          color: Colors.amber,
+                          child: Text('Clear',
+                            style: TextStyle(
+                            fontFamily: 'VisbyRound',
+                            fontWeight: FontWeight.bold,
+
+                          ),),
                           onPressed: () {
                             _showDialog(context, Width);
                           },
@@ -486,17 +511,18 @@ class _State extends State<DataPage> {
                       // padding: EdgeInsets.symmetric(horizontal:12, vertical: 12),
                     ),
                   ),
-                  Container(
-                    height: 20,
-                  ),
+                 Container( child: Column(
+    children:[
                   GestureDetector(
                     child: Container(
                       height: 30,
-                      child: Icon(
+                      child: Column( children:[ Icon(
                         Icons.dialer_sip_rounded,
                         color: Colors.green,
                         size: 30,
                       ),
+
+                      ]),
                     ),
                     onDoubleTap: () {
                       if (phoneController.text != '' &&
@@ -511,11 +537,25 @@ class _State extends State<DataPage> {
                               return AlertDialog(
                                   title: new Text("Notice!!"),
                                   backgroundColor: Colors.white,
-                                  content: new Text("Phone No. is not valid!"));
+                                  content: new Text("Phone No. is not valid!",
+                                    style: TextStyle(
+                                      fontFamily: 'VisbyRound',
+                                      fontWeight: FontWeight.bold,
+
+                                    ),));
                             });
                       }
                     },
                   ),
-                ]))));
+      Text("Double Tap To Call",
+      style: TextStyle(
+        fontFamily: "VisbyRound"
+      ),
+      ),
+                  ],
+                 ),
+
+
+                 )])))));
   }
 }

@@ -4,7 +4,7 @@ import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:flutter/services.dart';
 import 'drawerMenu.dart';
-
+import 'package:page_transition/page_transition.dart';
 class MainMenu extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _State();
@@ -13,8 +13,6 @@ class MainMenu extends StatefulWidget {
 class _State extends State<MainMenu> {
   TextEditingController searchController = TextEditingController();
   String userSearchInput = "";
-
-//search data from database
   int index;
   int _cIndex = 0;
   DatabaseHelper databaseHelper = DatabaseHelper();
@@ -25,15 +23,6 @@ class _State extends State<MainMenu> {
 
   List<Contact> filteredContact;
   bool isSearching = false;
-
-  void _incrementTab(index) {
-    setState(() {
-      _cIndex = index;
-    });
-  }
-
-
-
 
   void surelyDelete(BuildContext context, Contact contact) async {
     int result;
@@ -62,7 +51,7 @@ class _State extends State<MainMenu> {
           });
     }
     setState(() {
-   //   contactsViewWidget(contacts, isSearching);
+      //   contactsViewWidget(contacts, isSearching);
     });
   }
 
@@ -145,20 +134,28 @@ class _State extends State<MainMenu> {
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: Text("See Details"),
+            title: Text("See Details!!"),
             children: [
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Total Customers= ' + contacts.length.toString()),
+                child: Text(
+                  'Total Customers= ' + contacts.length.toString(),
+                  style: TextStyle(
+                      fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+                ),
               ),
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
                   //displayTotal();
                 },
-                child: Text('Total Money=  Rs.' + displayTotal()),
+                child: Text(
+                  'Total Money=  Rs.' + displayTotal(),
+                  style: TextStyle(
+                      fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+                ),
                 // child: Text('Total Money=  Rs.'),
               ),
               SimpleDialogOption(
@@ -197,7 +194,7 @@ class _State extends State<MainMenu> {
                   color: Colors.red,
                   onPressed: () {
                     surelyDelete(context, contact);
-                    Navigator.of(context).pop();
+                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center,  child: MainMenu()));
                   },
                 ),
                 Container(width: 120),
@@ -220,11 +217,14 @@ class _State extends State<MainMenu> {
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
     double Width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
       appBar: AppBar(
           toolbarHeight: 50,
           centerTitle: true,
-          backgroundColor: Colors.green,
+          brightness: Brightness.dark,
+          backgroundColor: Colors.deepPurple,
           title: Text('नाम खोजी गर्नुहोस ')),
       body: Column(
         children: [
@@ -242,54 +242,68 @@ class _State extends State<MainMenu> {
         ],
       ),
       drawer: DrawerMenu(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'New',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menu',
-          ),
-        ],
-        onTap: (index) {
-          _incrementTab(index);
-          switch (index) {
-            case 0:
-              {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DataPage()),
-                );
-                break;
-              }
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: DataPage()));
 
-            case 1:
-              {
-                myFocusNode.requestFocus();
-                break;
-              }
-            //   break;
-            case 2:
-              { if(contacts.length!=0 || contacts.length!=null){
-                menuDialog();}
-
-                break;
-              }
-
-            default:
-              {
-                break;
-              }
-          }
         },
+        child: Icon(
+          Icons.add,
+          size: 25,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
-    );
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: CircularNotchedRectangle(),
+          child: Container(
+            height: 60,
+           // color: Colors.white54,
+            color: Colors.white,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(width: 40),
+
+                FlatButton.icon(
+                    onPressed: () {
+                      myFocusNode.requestFocus();
+                    },
+                    icon: Icon(Icons.search),
+                    label: Text(
+                      'Search',
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'VisbyRound'),
+                    )),
+
+                Container(width: 150),
+                FlatButton.icon(
+                    onPressed: () {
+   // if(contacts.length!=0 || contacts.length!=null){
+                      if(contacts.length!=0|| contacts.length!=null){
+                        menuDialog();
+                      }
+
+
+
+                    },
+                    icon: Icon(Icons.menu),
+                    label: Text(
+                      'Menu',
+                      style:
+                      TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'VisbyRound'),
+                    )),
+                //  Icon(Icons.menu,size: 30, color: Colors.black,),
+              ],
+            ),
+          )
+
+          ),
+    ));
   }
 
   Widget contactsViewWidget(contacts, isSearching) {
@@ -312,13 +326,29 @@ class _State extends State<MainMenu> {
           child: ListTile(
             leading: CircleAvatar(
               //child: Icon(Icons.perm_contact_cal),
+              backgroundColor: Colors.deepPurple,
               child: Text(
                 contact.name[0].toUpperCase(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                    color: Colors.white),
               ),
             ),
-            title: Text(contact.name),
-            subtitle: Text(contact.remaining),
+            title: Text(
+              contact.name.toUpperCase(),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'VisbyRound',
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              contact.remaining,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'VisbyRound',
+                  fontWeight: FontWeight.w500),
+            ),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () {
@@ -327,12 +357,8 @@ class _State extends State<MainMenu> {
             ),
             //i dont know how to pass that editmode = true or false value
             onTap: () {
-              //Datapage void _save() it contains edit mode check look once
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DataPage(contact: contact)),
-              );
+              Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.bottomCenter, child: DataPage(contact: contact)));
+
             },
           ),
         );

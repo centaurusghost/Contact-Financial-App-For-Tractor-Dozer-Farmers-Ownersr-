@@ -1,16 +1,27 @@
 import 'package:clean_app/MainMenu.dart';
 import "package:flutter/material.dart";
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter/services.dart';
+void main()
+{
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.deepPurple,
+  statusBarBrightness: Brightness.light,
+  ));
+  runApp(MyApp());
+}
 
-void main() => runApp(MyApp());
 
 //checking git push
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      darkTheme: ThemeData.dark(),
+      theme: ThemeData(primarySwatch: Colors.blue,
+       // pageTransitionsTheme: PageTransitionsTheme(builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(),}),
+      ),
       home: AnimatedSplashScreen(
           duration: 2500,
           splash: Image.asset('splash.png'),
@@ -18,7 +29,7 @@ class MyApp extends StatelessWidget {
           nextScreen: MainMenu(),
           splashTransition: SplashTransition.fadeTransition,
           // pageTransitionType: PageTransitionType.scale,
-          backgroundColor: Colors.amber),
+          backgroundColor: Colors.white),
     );
   }
 }

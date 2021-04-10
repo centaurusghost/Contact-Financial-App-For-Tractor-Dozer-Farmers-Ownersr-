@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'drawerMenu.dart';
 
 class CompletePaid extends StatefulWidget {
@@ -49,9 +50,7 @@ class _State extends State<CompletePaid> {
             );
           });
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   //
@@ -64,10 +63,12 @@ class _State extends State<CompletePaid> {
     getContactList().then((data) {
       setState(() {
         filteredContact = data;
-        filteredContact.sort((a,b)=> a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        filteredContact.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         for (int i = 0; i <= filteredContact.length - 1; i++) {
           if (filteredContact[i].remaining == '0.0') {
-            unpaidList.add(filteredContact.elementAt(i));}
+            unpaidList.add(filteredContact.elementAt(i));
+          }
         }
       });
     });
@@ -82,7 +83,7 @@ class _State extends State<CompletePaid> {
     setState(() {
       filteredContact = unpaidList
           .where((contact) =>
-          contact.name.toLowerCase().contains(value.toLowerCase()))
+              contact.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
       // filteredContact = listContact.where((xxx) => xxx.name=='tilak khatri').toList();
     });
@@ -118,10 +119,7 @@ class _State extends State<CompletePaid> {
                   color: Colors.red,
                   onPressed: () {
                     surelyDelete(context, contact);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SortName()),
-                    );
+                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: CompletePaid()));
                   },
                 ),
                 Container(width: 120),
@@ -143,15 +141,14 @@ class _State extends State<CompletePaid> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    double Width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return SafeArea(child:Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,
+          brightness: Brightness.dark,
           centerTitle: true,
-          backgroundColor: Colors.red,
-          title: Text('Completely Paid  ' +
-              unpaidList.length.toString() +
-              '   जना')),
+          backgroundColor: Colors.deepPurple,
+          title: Text(
+              'सबै तिरेका   ' + unpaidList.length.toString() + '   जना')),
       body: Column(
         children: [
           searchBar(),
@@ -168,7 +165,7 @@ class _State extends State<CompletePaid> {
         ],
       ),
       drawer: DrawerMenu(),
-    );
+    )  );
   }
 
   Widget searchBar() {
@@ -216,49 +213,48 @@ class _State extends State<CompletePaid> {
   Widget contactsViewWidget(unpaidList, isSearching) {
     return Expanded(
         child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          physics: ClampingScrollPhysics(),
-          shrinkWrap: true,
-          itemCount:
+      scrollDirection: Axis.vertical,
+      physics: ClampingScrollPhysics(),
+      shrinkWrap: true,
+      itemCount:
           isSearching == true ? filteredContact.length : unpaidList.length,
-          // isSearching ==true? contactsFiltered.length :
-          // itemCount: unpaidList.length,
-          itemBuilder: (BuildContext context, int position) {
-            // var contact =unpaidList[position];
-            var contact = isSearching == true
-                ? filteredContact[position]
-                : unpaidList[position];
-            return Card(
-              color: Colors.white,
-              elevation: 2.0,
-              child: ListTile(
-                leading: CircleAvatar(
-                  //child: Icon(Icons.perm_contact_cal),
-                  child: Text(
-                    contact.name[0].toUpperCase(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                  ),
-                ),
-                title: Text(contact.name),
-                subtitle: Text(contact.remaining),
-                trailing: GestureDetector(
-                  child: Icon(Icons.delete),
-                  onTap: () {
-                    showDeleteDialog(context, contact);
-                  },
-                ),
-                //i dont know how to pass that editmode = true or false value
-                onTap: () {
-                  //Datapage void _save() it contains edit mode check look once
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DataPage(contact: contact)),
-                  );
-                },
+      // isSearching ==true? contactsFiltered.length :
+      // itemCount: unpaidList.length,
+      itemBuilder: (BuildContext context, int position) {
+        // var contact =unpaidList[position];
+        var contact = isSearching == true
+            ? filteredContact[position]
+            : unpaidList[position];
+        return Card(
+          color: Colors.white,
+          elevation: 2.0,
+          child: ListTile(
+            leading: CircleAvatar(
+              //child: Icon(Icons.perm_contact_cal),
+              backgroundColor: Colors.deepPurple,
+              child: Text(
+                contact.name[0].toUpperCase(),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0,color: Colors.white),
               ),
-            );
-          },
-        ));
+            ),
+            title: Text(contact.name.toUppercase(),
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+            subtitle: Text(contact.remaining,
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w500),),
+            trailing: GestureDetector(
+              child: Icon(Icons.delete),
+              onTap: () {
+                showDeleteDialog(context, contact);
+              },
+            ),
+            onTap: () {
+              //Datapage void _save() it contains edit mode check look once
+              Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.bottomCenter, child: DataPage(contact: contact)));
+
+            },
+          ),
+        );
+      },
+    ));
   }
 }
