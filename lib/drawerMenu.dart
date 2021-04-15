@@ -2,7 +2,6 @@ import 'package:clean_app/MainMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_app/UnpaidContacts.dart';
 import 'package:page_transition/page_transition.dart';
-import 'DataPage.dart';
 import 'ascendingNotPaid.dart';
 import 'CompletePaid.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,9 +38,6 @@ class DrawerMenu extends StatelessWidget {
               actions: <Widget>[
                 Row(
                   children: [
-                    // Container(
-                    //   width: (wide-300)/2,
-                    // ),
                     Container(
                       child: Image.asset(
                         "assets/myself.png",
@@ -167,8 +163,8 @@ class DrawerMenu extends StatelessWidget {
                 style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
               ),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: MainMenu()));
-
               },
             ),
             ListTile(
@@ -183,8 +179,8 @@ class DrawerMenu extends StatelessWidget {
               ),
 // tileColor: Colors.grey,
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: UnpaidContacts()));
-
               },
             ),
             ListTile(
@@ -198,8 +194,8 @@ class DrawerMenu extends StatelessWidget {
                 scale: 7,
               ),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: ascendingNotpaid()));
-
               },
             ),
             ListTile(
@@ -213,6 +209,7 @@ class DrawerMenu extends StatelessWidget {
                 scale: 7,
               ),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: CompletePaid()));
 
               },
@@ -228,6 +225,7 @@ class DrawerMenu extends StatelessWidget {
                 size: 30,
               ),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: SortName()));
 
               },

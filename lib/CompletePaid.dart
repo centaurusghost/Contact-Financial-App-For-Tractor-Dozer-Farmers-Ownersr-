@@ -1,5 +1,4 @@
 import 'package:clean_app/DataPage.dart';
-import 'package:clean_app/SOrtName.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
@@ -64,9 +63,9 @@ class _State extends State<CompletePaid> {
       setState(() {
         filteredContact = data;
         filteredContact.sort(
-            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+            (a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
         for (int i = 0; i <= filteredContact.length - 1; i++) {
-          if (filteredContact[i].remaining == '0.0') {
+          if (filteredContact[i].remaining == '0') {
             unpaidList.add(filteredContact.elementAt(i));
           }
         }
@@ -237,7 +236,7 @@ class _State extends State<CompletePaid> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0,color: Colors.white),
               ),
             ),
-            title: Text(contact.name.toUppercase(),
+            title: Text(contact.name.toUpperCase(),
               style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
             subtitle: Text(contact.remaining,
               style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w500),),
@@ -249,7 +248,7 @@ class _State extends State<CompletePaid> {
             ),
             onTap: () {
               //Datapage void _save() it contains edit mode check look once
-              Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.bottomCenter, child: DataPage(contact: contact)));
+              Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeftWithFade, alignment: Alignment.center, child: DataPage(contact: contact)));
 
             },
           ),

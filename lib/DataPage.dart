@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:page_transition/page_transition.dart';
 
 class DataPage extends StatefulWidget {
   @override
@@ -16,12 +17,35 @@ class DataPage extends StatefulWidget {
 class _State extends State<DataPage> {
   DatabaseHelper helper = DatabaseHelper();
   Contact contact;
-  double raw = 0.01, total = 0.02, remaining = 0.01, numOne = 0.03;
+  int raw = 0, total = 0, remaining = 0, numOne = 0;
   int numTwo = 1, rawTotal = 2;
   String totalOne = 'a', totalTwo = 'b';
   FocusNode myFocusNode;
 
   @override
+  String onChanged() {
+    //solution for invalid double
+    if (timeController.text == '') {
+      timeController.text = '0';
+    }
+    if (phoneController.text == '') {
+      phoneController.text = '0';
+    }
+    if (myController.text == '') {
+      myController.text = '0';
+    }
+    if (paidController.text == '') {
+      paidController.text = '0';
+    }
+
+    numOne = int.parse(myController.text==''?myController.text='0':myController.text=myController.text);
+    raw = int.parse(timeController.text);
+    numTwo = numOne.toInt();
+    total = numTwo * raw;
+    totalOne = total.toString();
+    return totalOne;
+  }
+
   void initState() {
     super.initState();
 
@@ -45,29 +69,6 @@ class _State extends State<DataPage> {
     }
   }
 
-  String onChanged() {
-    //solution for invalid double
-    if (timeController.text == '') {
-      timeController.text = '0';
-    }
-    if (phoneController.text == '') {
-      phoneController.text = '0';
-    }
-    if (myController.text == '') {
-      myController.text = '0';
-    }
-    if (paidController.text == '') {
-      paidController.text = '0';
-    }
-
-    numOne = double.parse(myController.text);
-    raw = double.parse(timeController.text);
-    numTwo = numOne.toInt();
-    total = numTwo * raw + (numOne - numTwo) * raw * 100 / 60;
-    totalOne = total.toString();
-    return totalOne;
-  }
-
   void clearEverything() {
     //make textfield empty
     totalController.text = '';
@@ -82,11 +83,11 @@ class _State extends State<DataPage> {
   void calculateData() {
     //to calcyulate the data
     String newOne;
-    double raw, remain;
+    int raw, remain;
     newOne = onChanged();
     totalController.text = newOne;
-    raw = double.parse(paidController.text);
-    remain = double.parse(newOne) - raw;
+    raw = int.parse(paidController.text);
+    remain = int.parse(newOne) - raw;
     remainingController.text = '$remain';
   }
 
@@ -157,10 +158,12 @@ class _State extends State<DataPage> {
     _save();
 
     Navigator.of(context).pop();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MainMenu()),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MainMenu()),
+    // );
+     Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: MainMenu()));
+
     clearEverything();
   }
 
@@ -261,6 +264,27 @@ class _State extends State<DataPage> {
       );
     }
   }
+  void calculateMinutes(value){
+    int a=0;
+    var arr = myController.text.split(RegExp(r"[+,-]"));
+    // arr = myController.text.split("-");
+    for(int i=0; i<=arr.length-1; i++){
+      if(myController.text[i]!='-'){
+      a=a+int.parse(arr[i]);}
+    }
+    myController.text= a.toString();
+  }
+
+  calculateGiven(value){
+    int a=0;
+    if(myController.text!=''){
+    var arr = paidController.text.split("+");
+    // arr = myController.text.split("-");
+    for(int i=0; i<=arr.length-1; i++){
+      a=a+int.parse(arr[i]);
+    }
+    paidController.text= a.toString();}
+  }
 
   TextEditingController totalController = TextEditingController();
   TextEditingController timeController = TextEditingController();
@@ -272,6 +296,7 @@ class _State extends State<DataPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: non_constant_identifier_names
     double Width = MediaQuery.of(context).size.width;
     return SafeArea(child: Scaffold(
         appBar: AppBar(
@@ -344,18 +369,22 @@ class _State extends State<DataPage> {
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
                       ),
-                      keyboardType: TextInputType.number,
+                     // keyboardType: TextInputType.number,
                       controller: myController,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
-                        LengthLimitingTextInputFormatter(5),
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9,.,+,-]')),
+                        LengthLimitingTextInputFormatter(8),
                       ],
                       // obscureText: true,
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'काम गरेको समय',
+                        labelText: 'काम गरेको मिनेट ',
                       ),
+                      onSubmitted: (value){
+                          calculateMinutes(value);
+
+                      },
                     ),
                   ),
                   Container(
@@ -382,7 +411,7 @@ class _State extends State<DataPage> {
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'प्रती घण्टा को',
+                        labelText: 'प्रती मिनेट को',
                       ),
                     ),
                   ),
@@ -392,18 +421,20 @@ class _State extends State<DataPage> {
                     padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
                     child: TextField(
                       controller: paidController,
-                      onSubmitted: (String) {
+                      onSubmitted: (value) {
                         setState(() {
+                          calculateGiven(value);
                           calculateData();
+                         //
                         });
                       },
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
                       ),
-                      keyboardType: TextInputType.number,
+                     // keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9,+]')),
                       ],
                       // obscureText: true,
                       //controller: passwordController,
@@ -501,6 +532,7 @@ class _State extends State<DataPage> {
                             style: TextStyle(
                             fontFamily: 'VisbyRound',
                             fontWeight: FontWeight.bold,
+                              color: Colors.black,
 
                           ),),
                           onPressed: () {

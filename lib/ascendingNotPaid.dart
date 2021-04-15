@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'drawerMenu.dart';
 
+// ignore: camel_case_types
 class ascendingNotpaid extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _State();
@@ -66,13 +67,15 @@ class _State extends State<ascendingNotpaid> {
     getContactList().then((data) {
       setState(() {
         filteredContact = data;
-        for (int i = 0; i <= filteredContact.length - 1; i++) {
-          if (filteredContact[i].remaining != '0.0') {
+        filteredContact.sort((b,a)=> a.remaining.compareTo(b.remaining));
+        for (int i = 0; i <= filteredContact.length-1; i++) {
+          if (filteredContact[i].remaining != '0') {
             unpaidList.add(filteredContact.elementAt(i));
           }
         }
-       unpaidList.sort((b,a)=> a.remaining.compareTo(b.remaining));
+     // unpaidList.sort((b,a)=> a.remaining.compareTo(b.remaining));
       });
+
     });
     if (myFocusNode == null) {
       myFocusNode = FocusNode();
