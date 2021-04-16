@@ -142,7 +142,6 @@ class _State extends State<UnpaidContacts> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    double Width = MediaQuery.of(context).size.width;
     return SafeArea(child: Scaffold(
       appBar: AppBar(
           toolbarHeight: 50,

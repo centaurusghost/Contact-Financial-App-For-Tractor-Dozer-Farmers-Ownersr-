@@ -65,7 +65,7 @@ class _State extends State<CompletePaid> {
         filteredContact.sort(
             (a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
         for (int i = 0; i <= filteredContact.length - 1; i++) {
-          if (filteredContact[i].remaining == '0') {
+          if (filteredContact[i].remaining == '0.0') {
             unpaidList.add(filteredContact.elementAt(i));
           }
         }

@@ -162,13 +162,18 @@ class _State extends State<MainMenu> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('तपाईंले पाएको रकम  =  Rs.' + displayPaid()),
+                child: Text('तपाईंले पाएको रकम  =  Rs.' + displayPaid(),
+                  style: TextStyle(
+                      fontFamily: 'VisbyRound', fontSize: 15,color: Colors.black),
+                ),
               ),
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('बाकी उठाउँनु पर्ने =  Rs.' + displayRemaining()),
+                child: Text('बाकी उठाउँनु पर्ने =  Rs.' + displayRemaining(),
+                  style: TextStyle(
+                      fontFamily: 'VisbyRound', fontSize: 15,color: Colors.black),),
               ),
             ],
           );
@@ -242,10 +247,10 @@ class _State extends State<MainMenu> {
         ],
       ),
       drawer: DrawerMenu(),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: DataPage()));
-
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: DataPage()));
         },
         child: Icon(
           Icons.add,
@@ -267,8 +272,9 @@ class _State extends State<MainMenu> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Container(width: 40),
+                Container(width: 30),
 
+                // ignore: deprecated_member_use
                 FlatButton.icon(
                     onPressed: () {
                       myFocusNode.requestFocus();
@@ -280,22 +286,20 @@ class _State extends State<MainMenu> {
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'VisbyRound'),
                     )),
 
-                Container(width: 150),
+                Container(width: (Width-165)/2),
+                // ignore: deprecated_member_use
                 FlatButton.icon(
                     onPressed: () {
    // if(contacts.length!=0 || contacts.length!=null){
+                      print(Width);
                       if(contacts.length!=0|| contacts.length!=null){
                         menuDialog();
                       }
-
-
-
                     },
                     icon: Icon(Icons.menu),
                     label: Text(
                       'Menu',
-                      style:
-                      TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'VisbyRound'),
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'VisbyRound'),
                     )),
                 //  Icon(Icons.menu,size: 30, color: Colors.black,),
               ],

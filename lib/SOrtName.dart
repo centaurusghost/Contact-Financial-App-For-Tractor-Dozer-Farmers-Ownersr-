@@ -63,8 +63,7 @@ class _State extends State<SortName> {
     getContactList().then((data) {
       setState(() {
         filteredContact = data;
-        filteredContact.sort(
-            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        filteredContact.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
         for (int i = 0; i <= filteredContact.length - 1; i++) {
           //  if (filteredContact[i].remaining != '0.0') {

@@ -69,11 +69,11 @@ class _State extends State<ascendingNotpaid> {
         filteredContact = data;
         filteredContact.sort((b,a)=> a.remaining.compareTo(b.remaining));
         for (int i = 0; i <= filteredContact.length-1; i++) {
-          if (filteredContact[i].remaining != '0') {
+          if (filteredContact[i].remaining != '0.0') {
             unpaidList.add(filteredContact.elementAt(i));
           }
         }
-     // unpaidList.sort((b,a)=> a.remaining.compareTo(b.remaining));
+      unpaidList.sort((b,a)=> a.remaining.compareTo(b.remaining));
       });
 
     });
