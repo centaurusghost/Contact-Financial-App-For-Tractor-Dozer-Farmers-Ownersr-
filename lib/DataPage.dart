@@ -17,7 +17,7 @@ class DataPage extends StatefulWidget {
 class _State extends State<DataPage> {
   DatabaseHelper helper = DatabaseHelper();
   Contact contact;
-  double raw = 0.01, total = 0.02, remaining = 0.01, numOne = 0.03;
+  int raw = 0, total = 0, remaining = 0, numOne = 0;
   int numTwo = 1, rawTotal = 2;
   String totalOne = 'a', totalTwo = 'b';
   FocusNode myFocusNode;
@@ -61,10 +61,10 @@ class _State extends State<DataPage> {
       paidController.text = '0';
     }
 
-    numOne = double.parse(myController.text);
-    raw = double.parse(timeController.text);
+    numOne = int.parse(myController.text);
+    raw = int.parse(timeController.text);
     numTwo = numOne.toInt();
-    total = numTwo * raw + (numOne - numTwo) * raw * 100 / 60;
+    total = numTwo * raw;
     totalOne = total.toString();
     return totalOne;
   }
@@ -83,11 +83,11 @@ class _State extends State<DataPage> {
   void calculateData() {
     //to calcyulate the data
     String newOne;
-    double raw, remain;
+    int raw, remain;
     newOne = onChanged();
     totalController.text = newOne;
-    raw = double.parse(paidController.text);
-    remain = double.parse(newOne) - raw;
+    raw = int.parse(paidController.text);
+    remain = int.parse(newOne) - raw;
     remainingController.text = '$remain';
   }
 
@@ -96,6 +96,32 @@ class _State extends State<DataPage> {
     setState(() {
       calculateData();
     });
+  }
+  calculateMinutes(){
+    int totalMinutes=0; String newMinutes;
+    newMinutes =myController.text;
+    var newVal = newMinutes.split(",");
+     print(newVal);
+
+    for(int i=0; i<=newVal.length-1; i++){
+      totalMinutes = totalMinutes+ int.parse(newVal[i]);
+
+    }
+    myController.text = totalMinutes.toString();
+    print(totalMinutes);
+
+  }
+ void calculatePaid(){
+    int totalMinutes=0; String newMinutes;
+    newMinutes =paidController.text;
+    var newVal = newMinutes.split(",");
+
+    for(int i=0; i<=newVal.length-1; i++){
+      totalMinutes = totalMinutes+ int.parse(newVal[i]);
+
+    }
+    paidController.text = totalMinutes.toString();
+
   }
 
 // void showDialogForSavedOrNot(BuildContext context, int i){
@@ -201,6 +227,7 @@ class _State extends State<DataPage> {
           });
     }
   }
+
 
 //this function to show save data dialog before saving to database
   void _showDialogForSaving(BuildContext context, double wide) {
@@ -349,6 +376,12 @@ class _State extends State<DataPage> {
                         fontSize: 20,
                       ),
                       keyboardType: TextInputType.number,
+                      onSubmitted: (value){
+                        setState(() {
+                          calculateMinutes();
+                        });
+
+                      },
                       controller: myController,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
@@ -358,7 +391,7 @@ class _State extends State<DataPage> {
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'काम गरेको समय',
+                        labelText: 'काम गरेको मिनेट ',
                       ),
                     ),
                   ),
@@ -386,7 +419,7 @@ class _State extends State<DataPage> {
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'प्रती घण्टा को',
+                        labelText: 'प्रती मिनेट को',
                       ),
                     ),
                   ),
@@ -396,8 +429,9 @@ class _State extends State<DataPage> {
                     padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
                     child: TextField(
                       controller: paidController,
-                      onSubmitted: (String) {
+                      onSubmitted: (value) {
                         setState(() {
+                          calculatePaid();
                           calculateData();
                         });
                       },
@@ -407,7 +441,7 @@ class _State extends State<DataPage> {
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9,,]')),
                       ],
                       // obscureText: true,
                       //controller: passwordController,
