@@ -8,12 +8,86 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:clean_app/SOrtName.dart';
 
 class DrawerMenu extends StatelessWidget {
+  bool import;
   void customLaunch(command) async {
     if (await canLaunch(command)) {
       await launch(command);
     } else {
       print(' could not launch $command');
     }
+  }
+  void importExport(context, String importExport){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return (AlertDialog(
+          title: new Text("Alert!!"),
+          backgroundColor: Colors.white,
+          content: new Text(importExport,
+            style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Yes",
+                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+              textColor: Colors.white,
+              // minWidth: 80,
+              color: Colors.red,
+              onPressed: () {//thi// s line is giving error
+                if(import == true){
+                  //import contacts from forebase
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return (AlertDialog(
+                          title: new Text("Alert!!"),
+                          backgroundColor: Colors.white,
+                          content: new Text("All local Contact will be Replaced",
+                            style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                          actions: <Widget>[
+                        new FlatButton(
+                        child: new Text("Continue!",
+                          style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                            textColor: Colors.white,
+                            // minWidth: 80,
+                            color: Colors.red,
+                            onPressed: () {
+                          //from here verify import confirmation
+
+
+                            }
+                        )]
+
+
+                        ));});
+
+
+                }
+                if(import==false){
+                  //export contacts
+
+                }
+              },
+            ),
+            Container(
+              width: 120,
+            ),
+            new FlatButton(
+              child: new Text("No",
+                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+              textColor: Colors.white,
+              // minWidth: 100,
+              color: Colors.red,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainMenu()),
+                );
+              },
+            ),
+          ],
+        ));
+      },
+    );
   }
 
   void _showDialog(BuildContext context, double wide) {
@@ -83,165 +157,197 @@ class DrawerMenu extends StatelessWidget {
     double Width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Drawer(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20),
-              color: Colors.deepPurple,
-              child: Center(
-                child: Column(
-                  children: [
-                    Container(
-                      // width: 100,
-                      height: 130,
-                      margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        // shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: ExactAssetImage(
-                            "assets/mama.png",
-                          ),
-                          // alignment: Alignment.centerRight,
-                          //fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "Prem Narayan Khanal",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontFamily: 'VisbyRound',
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "                       9816252504  ",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'VisbyRound',
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(20),
+                color: Colors.deepPurple,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        // width: 100,
+                        height: 130,
+                        margin: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          // shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: ExactAssetImage(
+                              "assets/mama.png",
+                            ),
+                            // alignment: Alignment.centerRight,
+                            //fit: BoxFit.fill,
                           ),
                         ),
-                        Icon(
-                          Icons.dialer_sip_sharp,
+                      ),
+                      Text(
+                        "Prem Narayan Khanal",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white,
+                          fontFamily: 'VisbyRound',
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "    premkhanal1000@gmail.com    ",
-                          style: TextStyle(
-                            fontFamily: 'VisbyRound',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "                       9816252504  ",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'VisbyRound',
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Icon(
+                            Icons.dialer_sip_sharp,
                             color: Colors.white,
                           ),
-                        ),
-                        Icon(Icons.email_outlined, color: Colors.white),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "    premkhanal1000@gmail.com    ",
+                            style: TextStyle(
+                              fontFamily: 'VisbyRound',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Icon(Icons.email_outlined, color: Colors.white),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              trailing: Icon(
-                Icons.list_alt,
-                size: 30,
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                trailing: Icon(
+                  Icons.list_alt,
+                  size: 30,
+                ),
+                title: Text(
+                  'Home | Main List',
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: MainMenu()));
+                },
               ),
-              title: Text(
-                'Home | Main List',
-                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: MainMenu()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              title: Text(
-                'कत्ती पनि नतिरेका',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-              ),
-              trailing: Image.asset(
-                'assets/moneyicon.png',
-                scale: 7,
-              ),
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'कत्ती पनि नतिरेका',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                ),
+                trailing: Image.asset(
+                  'assets/moneyicon.png',
+                  scale: 7,
+                ),
 // tileColor: Colors.grey,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: UnpaidContacts()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              title: Text(
-                'धेरै तिर्न बाकी',
-                style: TextStyle(fontSize: 17,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: UnpaidContacts()));
+                },
               ),
-              trailing: Image.asset(
-                'assets/moneyicon.png',
-                scale: 7,
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'धेरै तिर्न बाकी',
+                  style: TextStyle(fontSize: 17,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+                ),
+                trailing: Image.asset(
+                  'assets/moneyicon.png',
+                  scale: 7,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: ascendingNotpaid()));
+                },
               ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: ascendingNotpaid()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              title: Text(
-                'पुरा तिरेका ',
-                style: TextStyle(fontSize: 17, fontFamily: 'VisbyRound',fontWeight: FontWeight.w600),
-              ),
-              trailing: Image.asset(
-                'assets/moneyicon.png',
-                scale: 7,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: CompletePaid()));
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'पुरा तिरेका ',
+                  style: TextStyle(fontSize: 17, fontFamily: 'VisbyRound',fontWeight: FontWeight.w600),
+                ),
+                trailing: Image.asset(
+                  'assets/moneyicon.png',
+                  scale: 7,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: CompletePaid()));
 
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              title: Text(
-                'Sort By Name',
-                style: TextStyle(fontSize: 16, fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                },
               ),
-              trailing: Icon(
-                Icons.people,
-                size: 30,
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: SortName()));
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'Sort By Name',
+                  style: TextStyle(fontSize: 16, fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                ),
+                trailing: Icon(
+                  Icons.people,
+                  size: 30,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: SortName()));
 
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
-              title: Text(
-                'About Application',
-                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                },
               ),
-              trailing: Icon(Icons.quick_contacts_dialer_sharp,),
-              onTap: () {
-                _showDialog(context, Width);
-              },
-            ),
-          ],
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'Export Contacts',
+                  style: TextStyle(fontSize: 16, fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                ),
+                trailing: Icon(
+                  Icons.people,
+                  size: 30,
+                ),
+                onTap: () {
+                  import = false;
+                  importExport(context,"Do you really want to Export?");
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'Import Contacts',
+                  style: TextStyle(fontSize: 16, fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                ),
+                trailing: Icon(
+                  Icons.people,
+                  size: 30,
+                ),
+                onTap: () {
+                  import = true;
+                  importExport(context,"Do you really want to Import?");
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.account_balance, color: Colors.deepPurple,),
+                title: Text(
+                  'About Application',
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.bold),
+                ),
+                trailing: Icon(Icons.quick_contacts_dialer_sharp,),
+                onTap: () {
+                  _showDialog(context, Width);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
