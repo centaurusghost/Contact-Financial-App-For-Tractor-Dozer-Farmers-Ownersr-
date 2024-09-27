@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clean_app/Contact.dart';
 import 'package:clean_app/DatabaseHelper.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:page_transition/page_transition.dart';
 
 class DataPage extends StatefulWidget {
   @override
@@ -15,13 +17,13 @@ class DataPage extends StatefulWidget {
 class _State extends State<DataPage> {
   DatabaseHelper helper = DatabaseHelper();
   Contact contact;
-  double raw = 0.01, total = 0.02, remaining = 0.01, numOne = 0.03;
+  int raw = 0, total = 0, remaining = 0, numOne = 0;
   int numTwo = 1, rawTotal = 2;
   String totalOne = 'a', totalTwo = 'b';
   FocusNode myFocusNode;
+
   @override
   void initState() {
-
     super.initState();
 
     myFocusNode = FocusNode();
@@ -36,6 +38,13 @@ class _State extends State<DataPage> {
     remainingController.text = contact.remaining;
   }
 
+  void customLaunch(command) async {
+    if (await canLaunch(command)) {
+      await launch(command);
+    } else {
+      print(' could not launch $command');
+    }
+  }
 
   String onChanged() {
     //solution for invalid double
@@ -52,10 +61,10 @@ class _State extends State<DataPage> {
       paidController.text = '0';
     }
 
-    numOne = double.parse(myController.text);
-    raw = double.parse(timeController.text);
+    numOne = int.parse(myController.text);
+    raw = int.parse(timeController.text);
     numTwo = numOne.toInt();
-    total = numTwo * raw + (numOne - numTwo) * raw * 100 / 60;
+    total = numTwo * raw;
     totalOne = total.toString();
     return totalOne;
   }
@@ -74,11 +83,11 @@ class _State extends State<DataPage> {
   void calculateData() {
     //to calcyulate the data
     String newOne;
-    double raw, remain;
+    int raw, remain;
     newOne = onChanged();
     totalController.text = newOne;
-    raw = double.parse(paidController.text);
-    remain = double.parse(newOne) - raw;
+    raw = int.parse(paidController.text);
+    remain = int.parse(newOne) - raw;
     remainingController.text = '$remain';
   }
 
@@ -87,6 +96,32 @@ class _State extends State<DataPage> {
     setState(() {
       calculateData();
     });
+  }
+  calculateMinutes(){
+    int totalMinutes=0; String newMinutes;
+    newMinutes =myController.text;
+    var newVal = newMinutes.split(",");
+     print(newVal);
+
+    for(int i=0; i<=newVal.length-1; i++){
+      totalMinutes = totalMinutes+ int.parse(newVal[i]);
+
+    }
+    myController.text = totalMinutes.toString();
+    print(totalMinutes);
+
+  }
+ void calculatePaid(){
+    int totalMinutes=0; String newMinutes;
+    newMinutes =paidController.text;
+    var newVal = newMinutes.split(",");
+
+    for(int i=0; i<=newVal.length-1; i++){
+      totalMinutes = totalMinutes+ int.parse(newVal[i]);
+
+    }
+    paidController.text = totalMinutes.toString();
+
   }
 
 // void showDialogForSavedOrNot(BuildContext context, int i){
@@ -98,37 +133,41 @@ class _State extends State<DataPage> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-        width: (wide-200)/2,
+            width: (wide - 200) / 2,
             child: AlertDialog(
-          title: new Text("Alert!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Do you really Want to Clear?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Yes"),
-              textColor: Colors.white,
-             // minWidth: 80 ,
-              color: Colors.red,
-              onPressed: () {
-                clearEverything();
-                Navigator.of(context).pop();
-              },
-            ),
-            //SizedBox(width: 50),
-            Container(
-              width: 120,
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              textColor: Colors.white,
-             // minWidth: 80,
-              color: Colors.red,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ));
+              title: new Text("Alert!!"),
+              backgroundColor: Colors.white,
+              content: new Text("Do you really Want to Clear?",
+                style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text("Yes",
+                    style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                  textColor: Colors.white,
+                  // minWidth: 80 ,
+                  color: Colors.red,
+                  onPressed: () {
+                    clearEverything();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                //SizedBox(width: 50),
+                Container(
+                  width: 120,
+                ),
+                new FlatButton(
+                  child: new Text("No",
+                    style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                  textColor: Colors.white,
+                  // minWidth: 80,
+                  color: Colors.red,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
       },
     );
   }
@@ -145,10 +184,12 @@ class _State extends State<DataPage> {
     _save();
 
     Navigator.of(context).pop();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MainMenu()),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MainMenu()),
+    // );
+     Navigator.push(context, PageTransition(type: PageTransitionType.fade, alignment: Alignment.center, child: MainMenu()));
+
     clearEverything();
   }
 
@@ -187,57 +228,68 @@ class _State extends State<DataPage> {
     }
   }
 
+
 //this function to show save data dialog before saving to database
   void _showDialogForSaving(BuildContext context, double wide) {
 // flutter defined function
-  if(nameController.text=='' || timeController.text=='' || myController.text=='0'|| timeController.text=='0' || myController.text=='0'){
-    showDialog(
+    if (nameController.text == '' ||
+        timeController.text == '' ||
+        myController.text == '0' ||
+        timeController.text == '0' ||
+        myController.text == '0') {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: new Text("Notice!!"),
+                backgroundColor: Colors.white,
+                content: new Text("Cannot save incomplete Data!",
+
+                  style: TextStyle(
+                    fontFamily: 'VisbyRound',
+                    fontWeight: FontWeight.bold,
+
+                  ),));
+          });
+    } else {
+      calculateData();
+      showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-              title: new Text("Notice!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Cannot save incomplete Data!"));
-
-        }
-
-    );
-  }
-  else {
-    calculateData();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ( AlertDialog(
-          title: new Text("Notice!!"),
-          backgroundColor: Colors.white,
-          content: new Text("Do you really Want to Save?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Yes"),
-              textColor: Colors.white,
-             // minWidth: 80,
-              color: Colors.red,
-              onPressed: () {
-                saveData(); //this line is giving error
-              },
-            ),
-            Container(
-              width: 120,
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              textColor: Colors.white,
-             // minWidth: 100,
-              color: Colors.red,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ) );
-      },
-    );}
+          return (AlertDialog(
+            title: new Text("Notice!!"),
+            backgroundColor: Colors.white,
+            content: new Text("Do you really Want to Save?",
+              style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Yes",
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                textColor: Colors.white,
+                // minWidth: 80,
+                color: Colors.red,
+                onPressed: () {
+                  saveData(); //this line is giving error
+                },
+              ),
+              Container(
+                width: 120,
+              ),
+              new FlatButton(
+                child: new Text("No",
+                  style: TextStyle(fontSize: 16,fontFamily: 'VisbyRound', fontWeight: FontWeight.w600),),
+                textColor: Colors.white,
+                // minWidth: 100,
+                color: Colors.red,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ));
+        },
+      );
+    }
   }
 
   TextEditingController totalController = TextEditingController();
@@ -247,15 +299,18 @@ class _State extends State<DataPage> {
   TextEditingController remainingController = TextEditingController();
   TextEditingController paidController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    // ignore: non_constant_identifier_names
     double Width = MediaQuery.of(context).size.width;
-    double Height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return SafeArea(child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Data and Money'),
-          backgroundColor: Colors.pinkAccent,
+          brightness: Brightness.dark,
+           title: Text('नाम र पैसा  दर्ता गर्नुहोस ',
+          ),
+          backgroundColor: Colors.deepPurple,
         ),
         body: new Container(
             child: Padding(
@@ -263,7 +318,6 @@ class _State extends State<DataPage> {
                 child: ListView(children: <Widget>[
                   Container(
                     height: 10,
-
                   ),
                   Container(
                     height: 58,
@@ -322,6 +376,12 @@ class _State extends State<DataPage> {
                         fontSize: 20,
                       ),
                       keyboardType: TextInputType.number,
+                      onSubmitted: (value){
+                        setState(() {
+                          calculateMinutes();
+                        });
+
+                      },
                       controller: myController,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
@@ -331,7 +391,7 @@ class _State extends State<DataPage> {
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'काम गरेको समय',
+                        labelText: 'काम गरेको मिनेट ',
                       ),
                     ),
                   ),
@@ -359,7 +419,7 @@ class _State extends State<DataPage> {
 
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'प्रती घण्टा को',
+                        labelText: 'प्रती मिनेट को',
                       ),
                     ),
                   ),
@@ -369,8 +429,9 @@ class _State extends State<DataPage> {
                     padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
                     child: TextField(
                       controller: paidController,
-                      onSubmitted: (String) {
+                      onSubmitted: (value) {
                         setState(() {
+                          calculatePaid();
                           calculateData();
                         });
                       },
@@ -380,7 +441,7 @@ class _State extends State<DataPage> {
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9,,]')),
                       ],
                       // obscureText: true,
                       //controller: passwordController,
@@ -403,6 +464,7 @@ class _State extends State<DataPage> {
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        LengthLimitingTextInputFormatter(6),
                       ],
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -432,11 +494,10 @@ class _State extends State<DataPage> {
                       ),
                     ),
                   ),
-               Container(
-                 height: 20,
-
-               ),
-               Container(
+                  Container(
+                    height: 20,
+                  ),
+                  Container(
                     height: 70,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -445,13 +506,19 @@ class _State extends State<DataPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                         minWidth: (Width-80)/2,
+                          minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
-                          color: Colors.blue,
-                          child: Text('Calculate & Save'),
+                          color: Colors.deepPurple,
+                          child: Text('Calculate & Save',
+                            style: TextStyle(
+                              fontFamily: 'VisbyRound',
+                              fontWeight: FontWeight.bold,
+
+                            ),
+                          ),
                           onPressed: () {
-                            _showDialogForSaving(context,Width);
+                            _showDialogForSaving(context, Width);
                             //calculateData();
                             //  new Future.delayed(const Duration(seconds : 5));
                             //fill data
@@ -464,19 +531,70 @@ class _State extends State<DataPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                          minWidth:(Width-80)/2,
+                          minWidth: (Width - 80) / 2,
                           height: 50,
                           textColor: Colors.white,
-                          color: Colors.red,
-                          child: Text('Clear'),
+                          color: Colors.amber,
+                          child: Text('Clear',
+                            style: TextStyle(
+                            fontFamily: 'VisbyRound',
+                            fontWeight: FontWeight.bold,
+                              color: Colors.black,
+
+                          ),),
                           onPressed: () {
-                            _showDialog(context,Width);
+                            _showDialog(context, Width);
                           },
                         ),
                       ],
                       // padding: EdgeInsets.symmetric(horizontal:12, vertical: 12),
                     ),
                   ),
-                ]))));
+                 Container( child: Column(
+    children:[
+                  GestureDetector(
+                    child: Container(
+                      height: 30,
+                      child: Column( children:[ Icon(
+                        Icons.dialer_sip_rounded,
+                        color: Colors.green,
+                        size: 30,
+                      ),
+
+                      ]),
+                    ),
+                    onDoubleTap: () {
+                      if (phoneController.text != '' &&
+                          phoneController.text.length == 10) {
+                        String newDialer = phoneController.text;
+                        customLaunch('tel:$newDialer');
+                        // customLaunch('https://www.youtube.com/');
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: new Text("Notice!!"),
+                                  backgroundColor: Colors.white,
+                                  content: new Text("Phone No. is not valid!",
+                                    style: TextStyle(
+                                      fontFamily: 'VisbyRound',
+                                      fontWeight: FontWeight.bold,
+
+                                    ),));
+                            });
+                      }
+                    },
+                  ),
+      Text("Double Tap To Call",
+      style: TextStyle(
+        fontFamily: "VisbyRound"
+      ),
+      ),
+                  ],
+                 ),
+
+
+                 )])))));
   }
 }
